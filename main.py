@@ -16,7 +16,7 @@ while timecode := input("timecode [00:00]: "):
         if current_length >= timecode_to_int:
             data = requests.get(f.get('uri')).content
 
-            # Сохранение видеофайла на диск
+            # Сохранение во временный файл на диск
             temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix='.ts')
             temp_video_path.write(data)
             temp_video_path.close()
