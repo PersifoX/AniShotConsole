@@ -3,10 +3,12 @@ import cv2, requests, datetime, tempfile, requests
 from m3u8 import M3U8
 
 from prompt_toolkit import PromptSession, print_formatted_text as print
-
+from prompt_toolkit.formatted_text import FormattedText, HTML
 from prompt_toolkit.styles import Style
 
-from prompt_toolkit.formatted_text import FormattedText, HTML
+from classes.autocomlete import *
+from classes.objects import *
+from classes.validation import *
 
 from pyfiglet import Figlet
 
@@ -14,74 +16,143 @@ from pyfiglet import Figlet
 
 logo = Figlet(font="5lineoblique", width=250)
 
-print(HTML(f'<style color="#e11d48">{logo.renderText("AniShot")}</style>'))
-print(HTML(f'<bold>By persifox</bold> | <style color="#60a5fa">github.com/PersifoX/AniShot</style>\n'))
+print(HTML(f'<style color="#e11d48">{logo.renderText("AniShot Console")}</style>'))
+print(HTML(f'<bold>By persifox</bold> | <style color="#e11d48">github.com/PersifoX/AniShot</style>\n'))
+print(HTML(f'<bold>RIGHT CLICK</bold> <style color="#60a5fa">для вставки из буфера</style>'))
+print(HTML(f'<bold>CTRL + C</bold>    <style color="#60a5fa">для возврата назад</style>\n'))
 
 style = Style(
     [
         ('pl', '#454545 italic'),
         ('error', '#e11d48 bold'),
         ('warning', '#f59e0b bold'),
-        ('success', '#00b76e bold'),    
+        ('success', '#00b76e bold'),
+        ('primary', '#e11d48')
     ]
 )
 
-
-session = PromptSession(tempfile="history", style=style, enable_history_search=True, enable_system_prompt=True, erase_when_done=True)
+session = PromptSession(
+    tempfile="history", 
+    style=style,
+    erase_when_done=True, 
+    complete_in_thread=True, 
+    complete_while_typing=True,
+    validate_while_typing=True
+)
 
 try:
-    while url := session.prompt(f"url to m3u file: ", placeholder=FormattedText([("class:pl", "https://example.com/temp.m3u8")])):
-        
+    while True:
+
+        # set validation and complition for switching profile
+        session.completer=AnilibriaSearcher()
+        session.validator=AnilibriaValidator()
+
+        # main loop
+        anime_id = session.prompt(
+                HTML('<bold>Начните писать название аниме: </bold>'), 
+                placeholder=FormattedText([("class:pl", "Sousou no Frieren")]), 
+            )
+
+        # searching anime from api
+        anime = Anime(int(anime_id[3:])).from_api()
+
+        print(HTML(f'<style fg="#e11d48">[AniShot]</style> Выбран профиль для <bold>{anime.names.ru}</bold>'))
+
+        # unset completer
+        session.completer = None
+
+
         try:
-            data = requests.get(url).content
-        except:
-            print(FormattedText([("class:error", "error: Can't get data from url")]), style=style)
-            continue
+            # series loop
+            while serie_number := session.prompt(
+                HTML('<bold>Номер серии: </bold>'), 
+                        placeholder=FormattedText([("class:pl", "12")]),  
+                        validator=SerieValidator(anime),
+            ):
 
-        temp_m3u_path = tempfile.NamedTemporaryFile(delete=False, suffix='.ts')
-        temp_m3u_path.write(data)
-        temp_m3u_path.close()
+                anime.catch_serie(int(serie_number))
+                
+                m3u8_content = requests.get(anime.get_serie_uri()).text
 
-        file = open(temp_m3u_path.name, 'r')
+                # Parsing m3u8
+                m3u8_file = M3U8(m3u8_content)
 
-        m3u8_file = M3U8(file.read())
+                session.completer = None
 
-        while timecode := session.prompt(f"timecode: ", placeholder=FormattedText([("class:pl", "00:00")])):
 
-            timecode_to_int = datetime.datetime.strptime(timecode, "%M:%S").time().minute * 60 + datetime.datetime.strptime(timecode, "%M:%S").time().second
+                try:
+                    # timecode loop
+                    while timecode := session.prompt(
+                            f"таймкод: ", 
+                            placeholder=FormattedText([("class:pl", "00:00")]), 
+                            validator=TimecodeValidator()
+                        ):
 
-            current_length = duration = 0
+                        # Timecode to seconds
+                        timecode_to_int = datetime.datetime.strptime(timecode, "%M:%S").time().minute * 60 + datetime.datetime.strptime(timecode, "%M:%S").time().second
 
-            for f in m3u8_file.data['segments']:
-                duration = f.get('duration', 0)
+                        current_length = duration = 0
 
-                current_length += duration
+                        # Reading segments
+                        for f in m3u8_file.data['segments']:
+                            duration = f.get('duration', 0)
 
-                if current_length >= timecode_to_int:
-                    data = requests.get(f.get('uri')).content
+                            current_length += duration
 
-                    # Сохранение во временный файл на диск
-                    temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix='.ts')
-                    temp_video_path.write(data)
-                    temp_video_path.close()
+                            # If timecode is in this segment
+                            if current_length >= timecode_to_int:
 
-                    break
+                                # Save segment
+                                temp_video_path = tempfile.NamedTemporaryFile(delete=False, suffix='.ts')
+                                temp_video_path.write(requests.get(f.get('uri')).content)
+                                temp_video_path.close()
 
-            # print("DEBUG: " + str(current_length))
+                                break
 
-            video_capture = cv2.VideoCapture(temp_video_path.name)
+                        # Parsing video
+                        video_capture = cv2.VideoCapture(temp_video_path.name)
 
-            video_capture.set(cv2.CAP_PROP_POS_MSEC, (duration - (current_length - timecode_to_int)) * 1000)
+                        # Set position
+                        video_capture.set(cv2.CAP_PROP_POS_MSEC, (duration - (current_length - timecode_to_int)) * 1000)
 
-            # print("DEBUG: " + str(video_capture.get(cv2.CAP_PROP_POS_MSEC)) + " " + str(duration - (current_length - timecode_to_int)* 1000))
+                        success, image = video_capture.read()
 
-            success, image = video_capture.read()
+                        # Save image
+                        if success:
+                            default = anime.code
 
-            if success:
-                cv2.imwrite(f'{session.prompt("name of image: ", placeholder=FormattedText([("class:pl", "image"), ("", ".jpg")]))}.jpg', image)
+                            session.validator = NameValidator()
+                            session.completer = None
+
+                            filename = session.prompt(
+                                    "Название изображения: ",
+                                    placeholder=FormattedText([("class:pl", default), ("", ".jpg")])
+                                ) or default
+                            
+
+                            # write image
+                            cv2.imwrite(f"{filename}.jpg", image)
+
+                            print(HTML(f'<style fg="#e11d48">[AniShot]</style> Скриншот сохранен как <bold>{filename}.jpg</bold>'))
+
+                            #cv2.imshow("screenshot", image)
+
+                        # clearing memory
+                        video_capture.release()
+
+
+                except KeyboardInterrupt:
+                    print(HTML('\n<bold>[CTRL + C]</bold> <style color="#f59e0b">Замена серии...</style>'), style=style)
+
+
+        except KeyboardInterrupt:
+            print(HTML('\n<bold>[CTRL + C]</bold> <style color="#f59e0b">Замена профиля аниме...</style>'), style=style)
+
+
+
 
 except KeyboardInterrupt:
-    print(HTML('\n<style color="#f59e0b">Woah! Some screenshots can be lost, but you can always try again.</style>'), style=style)
+    print(HTML('\n<bold>[CTRL + C]</bold> <style color="#f59e0b">Все скриншоты сохранены в эту папку, завершение работы.</style>'), style=style)
 
 finally:
-    print(HTML('\n<style color="#60a5fa">Have a nice day!</style>'), style=style)
+    print(HTML(f'<style color="#e11d48">{logo.renderText("See next time...")}</style>'))
