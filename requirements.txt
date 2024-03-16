@@ -1,0 +1,6 @@
+m3u8
+numpy
+opencv-python
+prompt-toolkit
+pyfiglet
+requests
