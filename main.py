@@ -17,7 +17,7 @@ from pyfiglet import Figlet
 logo = Figlet(font="5lineoblique", width=250)
 
 print(HTML(f'<style color="#e11d48">{logo.renderText("AniShot Console")}</style>'))
-print(HTML(f'<bold>By persifox</bold> | <style color="#e11d48">github.com/PersifoX/AniShot</style>\n'))
+print(HTML(f'<bold>By persifox</bold> | <style color="#e11d48">github.com/PersifoX/AniShotConsole</style>\n'))
 print(HTML(f'<bold>RIGHT CLICK</bold> <style color="#60a5fa">для вставки из буфера</style>'))
 print(HTML(f'<bold>CTRL + C</bold>    <style color="#60a5fa">для возврата назад</style>\n'))
 
