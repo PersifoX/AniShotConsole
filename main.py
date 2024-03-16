@@ -1,4 +1,4 @@
-import cv2, requests, datetime, tempfile, requests
+import cv2, requests, datetime, tempfile
 
 from m3u8 import M3U8
 
