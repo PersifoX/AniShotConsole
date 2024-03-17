@@ -164,11 +164,11 @@ CTRL + C    для возврата назад
 Все изображения будут расположены в той же папке, что и сама программа.
 ### Скриншоты работы
 
-![[https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122321.png]]
+![](https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122321.png)
 
-![[https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122353.png]]
+![](https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122353.png)
 
-![[https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122407.png]]
+![](https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122407.png)
 
 ## Ошибки 
 
