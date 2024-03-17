@@ -109,6 +109,11 @@ try:
 
                                 break
 
+                        # If timecode is not in this segment
+                        if current_length < timecode_to_int:
+                            print(HTML(f'<style fg="#e11d48">[AniShot]</style> Таймкод <bold>{timecode}</bold> не найден'))
+                            continue
+
                         # Parsing video
                         video_capture = cv2.VideoCapture(temp_video_path.name)
 
