@@ -1,4 +1,4 @@
-import cv2, requests, datetime, tempfile
+import cv2, requests, datetime, tempfile, os
 
 from m3u8 import M3U8
 
@@ -140,10 +140,11 @@ try:
 
                             print(HTML(f'<style fg="#e11d48">[AniShot]</style> Скриншот сохранен как <bold>{filename}.jpg</bold>'))
 
-                            #cv2.imshow("screenshot", image)
-
                         # clearing memory
                         video_capture.release()
+
+                        os.remove(temp_video_path.name)
+
 
 
                 except KeyboardInterrupt:
@@ -158,6 +159,9 @@ try:
 
 except KeyboardInterrupt:
     print(HTML('\n<bold>[CTRL + C]</bold> <style color="#f59e0b">Все скриншоты сохранены в эту папку, завершение работы.</style>'), style=style)
+
+except Exception as e:
+    print(HTML(f'<style fg="#e11d48">[AniShot]</style> К сожалению, AniShot не смог сделать скриншот\n[Source] <bold>{e}</bold>'), style=style)
 
 finally:
     print(HTML(f'<style color="#e11d48">{logo.renderText("See next time...")}</style>'))
