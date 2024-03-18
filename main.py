@@ -1,4 +1,4 @@
-import cv2, requests, datetime, tempfile, os
+import cv2, requests, datetime, tempfile, os, time
 
 from m3u8 import M3U8
 
@@ -19,7 +19,9 @@ logo = Figlet(font="5lineoblique", width=250)
 print(HTML(f'<style color="#e11d48">{logo.renderText("AniShot Console")}</style>'))
 print(HTML(f'<bold>By persifox</bold> | <style color="#e11d48">github.com/PersifoX/AniShotConsole</style>\n'))
 print(HTML(f'<bold>RIGHT CLICK</bold> <style color="#60a5fa">для вставки из буфера</style>'))
-print(HTML(f'<bold>CTRL + C</bold>    <style color="#60a5fa">для возврата назад</style>\n'))
+print(HTML(f'<bold>CTRL + C</bold>    <style color="#60a5fa">для возврата назад</style>'))
+print(HTML(f'<bold>P</bold>           <style color="#60a5fa">поставить реплей на паузу</style>'))
+# print(HTML(f'<bold>Q</bold>           <style color="#60a5fa">выйти из реплея</style>\n'))
 
 style = Style(
     [
@@ -84,9 +86,17 @@ try:
                     # timecode loop
                     while timecode := session.prompt(
                             f"таймкод: ", 
-                            placeholder=FormattedText([("class:pl", "00:00")]), 
+                            placeholder=FormattedText([("class:pl", "00:00 или ~00:00")]), 
                             validator=TimecodeValidator()
                         ):
+
+                        replay = False
+
+                        if timecode.startswith('~'):
+
+                            replay = True
+                            timecode = timecode[1:]
+
 
                         # Timecode to seconds
                         timecode_to_int = datetime.datetime.strptime(timecode, "%M:%S").time().minute * 60 + datetime.datetime.strptime(timecode, "%M:%S").time().second
@@ -117,28 +127,55 @@ try:
                         # Parsing video
                         video_capture = cv2.VideoCapture(temp_video_path.name)
 
-                        # Set position
-                        video_capture.set(cv2.CAP_PROP_POS_MSEC, (duration - (current_length - timecode_to_int)) * 1000)
+                        if not replay:
+                            # Set position
+                            video_capture.set(cv2.CAP_PROP_POS_MSEC, (duration - (current_length - timecode_to_int)) * 1000)
 
-                        success, image = video_capture.read()
+                            success, image = video_capture.read()
 
-                        # Save image
-                        if success:
-                            default = anime.code
+                            # Save image
+                            if success:
+                                default = anime.code
 
-                            session.validator = NameValidator()
-                            session.completer = None
+                                session.validator = NameValidator()
+                                session.completer = None
 
-                            filename = session.prompt(
-                                    "Название изображения: ",
-                                    placeholder=FormattedText([("class:pl", default), ("", ".jpg")])
-                                ) or default
-                            
+                                filename = session.prompt(
+                                        "Название изображения: ",
+                                        placeholder=FormattedText([("class:pl", default), ("", ".jpg")])
+                                    ) or default
+                                
 
-                            # write image
-                            cv2.imwrite(f"{filename}.jpg", image)
+                                # write image
+                                cv2.imwrite(f"{filename}.jpg", image)
 
-                            print(HTML(f'<style fg="#e11d48">[AniShot]</style> Скриншот сохранен как <bold>{filename}.jpg</bold>'))
+                                print(HTML(f'<style fg="#e11d48">[AniShot]</style> Скриншот сохранен как <bold>{filename}.jpg</bold>'))
+
+                        else:
+                            print(HTML(f'<style fg="#e11d48">[AniShot]</style> Быстрый реплей отрывка <bold>{timecode}</bold> через 1 секунду...'))
+
+                            time.sleep(1)
+
+                            while True:
+                                ret, frame = video_capture.read()
+
+                                if not ret:
+                                    break
+
+                                reescaled_frame  = frame
+
+                                for i in range(1):
+                                    reescaled_frame = cv2.pyrDown(reescaled_frame)
+
+                                cv2.imshow('Replay', reescaled_frame)
+
+                                # If 'q' key is pressed, exit the loop
+                                if cv2.waitKey(1) & 0xFF in (ord('q'), ord('Q'), ord('й'), ord('Й')):
+                                    break
+
+
+                            cv2.destroyWindow('Replay')
+
 
                         # clearing memory
                         video_capture.release()

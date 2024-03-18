@@ -26,11 +26,14 @@ class SerieValidator(Validator):
 
 class TimecodeValidator(Validator):
     def validate(self, document):
+
+        text = document.text.replace('~', '')
+
         try:
-            datetime.datetime.strptime(document.text, "%M:%S")
+            datetime.datetime.strptime(text, "%M:%S")
 
         except:
-            raise ValidationError(message='Таймкод должен быть в формате MM:SS')
+            raise ValidationError(message='Таймкод должен быть в формате MM:SS или ~MM:SS (для просмотра отрывка)')
 
 
 class NameValidator(Validator):
