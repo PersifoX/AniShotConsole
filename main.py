@@ -33,6 +33,12 @@ style = Style(
     ]
 )
 
+font = cv2.FONT_HERSHEY_DUPLEX
+bottomLeftCornerOfText = (10, 50)
+fontScale = 1
+fontColor = (255, 255, 255)
+lineType = 1
+
 session = PromptSession(
     tempfile="history", 
     style=style,
@@ -162,15 +168,24 @@ try:
                                 if not ret:
                                     break
 
-                                reescaled_frame  = frame
+                                #rescaling image
+                                reescaled_frame = frame
 
                                 for i in range(1):
                                     reescaled_frame = cv2.pyrDown(reescaled_frame)
 
+                                #timecode
+                                source = current_length - duration + int(video_capture.get(cv2.CAP_PROP_POS_MSEC) / 1000)
+
+                                timecode = datetime.datetime.fromtimestamp(source).strftime('%M:%S')
+
+
+                                cv2.putText(reescaled_frame, timecode, bottomLeftCornerOfText, font, fontScale, fontColor, lineType)
+
                                 cv2.imshow('Replay', reescaled_frame)
 
                                 # If 'q' key is pressed, exit the loop
-                                if cv2.waitKey(1) & 0xFF in (ord('q'), ord('Q'), ord('й'), ord('Й')):
+                                if cv2.waitKey(25) & 0xFF in (ord('q'), ord('Q'), ord('й'), ord('Й')):
                                     break
 
 
