@@ -20,8 +20,8 @@ print(HTML(f'<style color="#e11d48">{logo.renderText("AniShot Console")}</style>
 print(HTML(f'<bold>By persifox</bold> | <style color="#e11d48">github.com/PersifoX/AniShotConsole</style>\n'))
 print(HTML(f'<bold>RIGHT CLICK</bold> <style color="#60a5fa">для вставки из буфера</style>'))
 print(HTML(f'<bold>CTRL + C</bold>    <style color="#60a5fa">для возврата назад</style>'))
-print(HTML(f'<bold>P</bold>           <style color="#60a5fa">поставить реплей на паузу</style>'))
-# print(HTML(f'<bold>Q</bold>           <style color="#60a5fa">выйти из реплея</style>\n'))
+# print(HTML(f'<bold>P</bold>           <style color="#60a5fa">поставить реплей на паузу</style>'))
+print(HTML(f'<bold>Q</bold>           <style color="#60a5fa">выйти из реплея</style>\n'))
 
 style = Style(
     [
