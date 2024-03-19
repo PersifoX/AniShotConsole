@@ -2,19 +2,28 @@
 
 <div align="center">
 
-  <a style="color: #e11d48;" href="https://github.com/PersifoX/AniShotConsole">
+  <a style="color: #e11d48;">
     <bold><h1>AniShot Console</h1></bold>
   </a>
+
+  ![](https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240319184035.png)
+
+  
   <p align="center">
     Консольное приложение для создания скриншотов по таймкоду и названиям из Anilibria
+    
     <br />
     <br />
+    ![PowerShell](https://img.shields.io/badge/PowerShell-%235391FE.svg?style=for-the-badge&logo=powershell&logoColor=white)
+    ![Windows Terminal](https://img.shields.io/badge/Windows%20Terminal-%234D4D4D.svg?style=for-the-badge&logo=windows-terminal&logoColor=white)
+    ![OpenCV](https://img.shields.io/badge/opencv-%23white.svg?style=for-the-badge&logo=opencv&logoColor=white)
+    ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
   </p>
 </div>
 
-## Начало
+# Начало
 
-  
+<br>  
 
 Приложение требует `python` версии `3.10` и выше, а также зависимости,
 
@@ -24,11 +33,11 @@
 > Данный мануал установки является упрощенным, для тех, кто мало работал
 в терминале или вовсе не знает, что это такое. Расширенная версия будет позже.
 
-  
+<br>  
 
-### Подготовка
+# Подготовка
 
-  
+<br>
 
 Установите python на свой компьютер. Сделать это можно через [microsoft store](https://www.microsoft.com/store/productId/9PJPW5LDXLZ5?ocid=pdpshare),
 
@@ -47,11 +56,11 @@ PS C:\Users\Кефир> python -V
 Python 3.11.8
 ```
 
-  
+<br>  
 
-### Установка
+# Установка
 
-  
+<br>  
 
 1. Создайте папку в любом удобном месте, мы это сделаем на рабочем столе.
 
@@ -77,9 +86,11 @@ PS C:\Users\Кефир> cd Desktop/AniShot
 
 6. Если в терминале не появилось красного текста, процесс установки можно считать успешным.
 
-  
+<br>  
 
-## Использование
+# Использование
+
+<br>  
 
 Для запуска используем команду `python main.py`:
 
@@ -162,7 +173,12 @@ CTRL + C    для возврата назад
 ```
 
 Все изображения будут расположены в той же папке, что и сама программа.
-### Скриншоты работы
+
+<br>  
+
+# Скриншоты работы
+
+<br>  
 
 ![](https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122321.png)
 
@@ -170,7 +186,11 @@ CTRL + C    для возврата назад
 
 ![](https://raw.githubusercontent.com/PersifoX/AniShotConsole/main/docs/images/Pasted%20image%2020240317122407.png)
 
-## Ошибки 
+<br>  
+
+# Ошибки 
+
+<br>  
 
 ### Название аниме
 
