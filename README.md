@@ -64,7 +64,7 @@ Python 3.11.8
 
 1. Создайте папку в любом удобном месте, мы это сделаем на рабочем столе.
 
-2. Скачайте архив по [этой ссылке](https://github.com/PersifoX/AniShotConsole/releases/download/0.1.0/AniShotConsole.zip), или исходный код в `Releases`.
+2. Скачайте архив по [этой ссылке](https://github.com/PersifoX/AniShotConsole/releases/download/0.2.0/AniShotConsole.zip), или исходный код в `Releases`.
 
 3. Распакуйте архив в вашу папку.
 
